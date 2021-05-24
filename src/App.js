@@ -1,4 +1,3 @@
-import logo from './logo.svg';
 import MyList from './MyList';
 
 function App() {

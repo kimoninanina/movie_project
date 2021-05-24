@@ -1,15 +1,14 @@
 
-import dataJso from './data.json';
 const reducer = (state = {
   myList: [],
   recommendations: []
 }, action) => {
   switch (action.type) {
-    case 'query': {
+    case 'setData': {
       return {
         ...state,
-        myList: dataJso['mylist'],
-        recommendations: dataJso['recommendations'],
+        myList: action['payload']['myList'],
+        recommendations: action['payload']['recommendations'],
       }
     }
     case 'add': {
