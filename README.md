@@ -12,7 +12,6 @@ or
 yarn
 ```
 
-
 ### Start project
 
 ```bash
