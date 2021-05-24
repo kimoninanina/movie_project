@@ -1,43 +1,20 @@
 import React from 'react';
+import {connect} from "react-redux"
 import './MyList.css';
 import logo from './logo.jpg';
-
-
-const data = require('./data.json');
 
 class MyList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: data,
       showId: '',
     };
 
-    this.deleteFun = this.deleteFun.bind(this);
-    this.addFun = this.addFun.bind(this);
     this.getCard = this.getCard.bind(this);
   }
-  
-  deleteFun(row = {}){
-    let data = this.state.data;
-    data['mylist'] = data['mylist'].filter((da) => {
-      return da['id'] != row['id'];
-    });
-    data['recommendations'].push(row);
-    this.setState({
-      data,
-    });
-  }
-  
-  addFun(row = {}){
-    let data = this.state.data;
-    data['mylist'].push(row);
-    data['recommendations'] = data['recommendations'].filter((da) => {
-      return da['id'] != row['id'];
-    });
-    this.setState({
-      data,
-    });
+
+  componentDidMount(){
+    this.props.queryList();
   }
 
   getCard(param = {}){
@@ -74,7 +51,7 @@ class MyList extends React.Component {
   }
 
   render() {
-    const { data } = this.state;
+    const { myList, recommendations } = this.props;
     return (
       <div className="main">
         <br/>
@@ -88,11 +65,11 @@ class MyList extends React.Component {
           </div>
           <div className="card-list">
             {
-              data['mylist'] && data['mylist'].map((row) => {
+              myList && myList.map((row) => {
                 return this.getCard({
                   data: row,
                   type: 'delete',
-                  fun: this.deleteFun
+                  fun: (row) => this.props.delete(row)
                 })
               })
             }
@@ -104,11 +81,11 @@ class MyList extends React.Component {
           </div>
           <div className="card-list">
             {
-              data['recommendations'] && data['recommendations'].map((row) => {
+              recommendations && recommendations.map((row) => {
                 return this.getCard({
                   data: row,
                   type: 'add',
-                  fun: this.addFun
+                  fun: (row) => this.props.add(row)
                 })
               })
             }
@@ -120,4 +97,35 @@ class MyList extends React.Component {
   }
 }
 
-export default MyList;
+function mapStateToProps(state){
+  return {
+    myList: state.myList,
+    recommendations: state.recommendations,
+  }
+}
+
+//该函数作为connect的第二个参数，能拿到dispatch
+//映射dispatch方法到组建的props上
+function mapDispatchToProps(dispatch){
+  return {
+      queryList(){
+          dispatch({
+              type:"query"
+          })
+      },
+      add(data){
+          dispatch({
+              type:"add",
+              payload: data
+          })
+      },
+      delete(id){
+          dispatch({
+              type:"delete",
+              payload: id
+          })
+      }
+  }
+}
+
+export default connect( mapStateToProps , mapDispatchToProps )(MyList)
